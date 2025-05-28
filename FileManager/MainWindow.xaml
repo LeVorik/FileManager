@@ -1,0 +1,54 @@
+﻿<Window x:Class="FileManager.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:FileManager"
+        mc:Ignorable="d"
+        Title="Файловый менеджер" Height="450" Width="800">
+    <DockPanel>
+        <!-- Верхняя панель с кнопками -->
+        <StackPanel Orientation="Horizontal" DockPanel.Dock="Top" Background="#2d2d30" Height="40">
+            <Button Content="Назад" Width="75" Margin="2" Click="BackButton_Click"/>
+            <Button Content="Вперёд" Width="75" Margin="2" Click="ForwardButton_Click"/>
+            <CheckBox x:Name="ShowHiddenCheckBox" Content="Показывать скрытые файлы" Checked="ShowHiddenCheckBox_Checked" Unchecked="ShowHiddenCheckBox_Checked" Margin="100,5,0,5" Foreground="White"/>
+        </StackPanel>
+
+        <!-- Табконтрол с вкладками -->
+        <TabControl x:Name="TabControl">
+            <TabItem Header="Локальный диск C:">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="250"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- Дерево директорий -->
+                    <TreeView Name="DirectoryTree" SelectedItemChanged="DirectoryTree_SelectedItemChanged" />
+
+                    <!-- Правая панель со списком файлов и папок -->
+                    <ListView Name="FileList" Grid.Column="1" SelectionMode="Single" MouseDoubleClick="FileList_MouseDoubleClick">
+                        <ListView.ContextMenu>
+                            <ContextMenu>
+                                <MenuItem Header="Открыть" Click="OpenItem_Click"/>
+                                <MenuItem Header="Удалить" Click="DeleteItem_Click"/>
+                                <MenuItem Header="Переименовать" Click="RenameItem_Click"/>
+                                <Separator/>
+                                <MenuItem Header="Копировать" Click="CopyItem_Click"/>
+                                <MenuItem Header="Вставить" Click="PasteItem_Click"/>
+                            </ContextMenu>
+                        </ListView.ContextMenu>
+                        <ListView.View>
+                            <GridView>
+                                <GridViewColumn Header="Имя" DisplayMemberBinding="{Binding Name}" Width="300"/>
+                                <GridViewColumn Header="Тип" DisplayMemberBinding="{Binding Type}" Width="100"/>
+                                <GridViewColumn Header="Размер (КБ)" DisplayMemberBinding="{Binding Size}" Width="100"/>
+                                <GridViewColumn Header="Дата изменения" DisplayMemberBinding="{Binding DateModified}" Width="200"/>
+                            </GridView>
+                        </ListView.View>
+                    </ListView>
+                </Grid>
+            </TabItem>
+        </TabControl>
+    </DockPanel>
+</Window>
