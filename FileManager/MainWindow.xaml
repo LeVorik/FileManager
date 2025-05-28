@@ -68,38 +68,43 @@
         </Style>
 
         <!-- Стиль для пунктов меню -->
-        <Style TargetType="MenuItem" x:Key="FlatMenuItem">
-            <Setter Property="Foreground" Value="#333"/>
-            <Setter Property="Padding" Value="8,4"/>
-            <Setter Property="Cursor" Value="Hand"/>
+        <Style x:Key="FlatMenuItem" TargetType="MenuItem">
+            <Setter Property="Foreground" Value="Black"/>
+            <Setter Property="Padding" Value="10,4"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="MenuItem">
-                        <Border x:Name="Border" Background="Transparent" CornerRadius="4" Padding="4" >
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="24"/>
-                                    <ColumnDefinition Width="*"/>
-                                </Grid.ColumnDefinitions>
-                                <!-- Иконка из шрифта Segoe MDL2 Assets -->
-                                <TextBlock x:Name="Icon" FontFamily="Segoe MDL2 Assets" FontSize="14" Foreground="#666" VerticalAlignment="Center" Text="{Binding Tag, RelativeSource={RelativeSource TemplatedParent}}" Margin="4,0,8,0"/>
-                                <ContentPresenter Grid.Column="1" VerticalAlignment="Center" RecognizesAccessKey="True"/>
-                            </Grid>
+                        <Border Background="Transparent" x:Name="Border" Padding="{TemplateBinding Padding}">
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                <!-- Иконка -->
+                                <TextBlock 
+                            FontFamily="Segoe MDL2 Assets" 
+                            FontSize="18" 
+                            Foreground="#666" 
+                            VerticalAlignment="Center" 
+                            Text="{Binding Tag, RelativeSource={RelativeSource TemplatedParent}}" 
+                            Margin="0,0,10,0"/>
+
+                                <!-- Текст заголовка -->
+                                <ContentPresenter 
+                            VerticalAlignment="Center" 
+                            ContentSource="Header" 
+                            RecognizesAccessKey="True"/>
+                            </StackPanel>
                         </Border>
                         <ControlTemplate.Triggers>
-                            <Trigger Property="IsHighlighted" Value="True">
-                                <Setter TargetName="Border" Property="Background" Value="#0078D7"/>
-                                <Setter TargetName="Icon" Property="Foreground" Value="White"/>
-                                <Setter Property="Foreground" Value="White"/>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Border" Property="Background" Value="#EEE"/>
                             </Trigger>
                             <Trigger Property="IsEnabled" Value="False">
-                                <Setter Property="Foreground" Value="#AAA"/>
+                                <Setter Property="Foreground" Value="#999"/>
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
         </Style>
+
     </Window.Resources>
 
     <DockPanel Margin="8">
@@ -123,12 +128,13 @@
                     <ListView x:Name="FileList" Margin="0" MouseDoubleClick="FileList_MouseDoubleClick" >
                         <ListView.ContextMenu>
                             <ContextMenu Style="{StaticResource FlatContextMenu}">
-                                <MenuItem Header="Открыть" Tag="" Style="{StaticResource FlatMenuItem}" Click="OpenItem_Click"/>
-                                <MenuItem Header="Удалить" Tag="" Style="{StaticResource FlatMenuItem}" Click="DeleteItem_Click"/>
-                                <MenuItem Header="Переименовать" Tag="" Style="{StaticResource FlatMenuItem}" Click="RenameItem_Click"/>
+                                <MenuItem Header="Открыть" Tag="" Style="{StaticResource FlatMenuItem}" Click="OpenItem_Click"/>
                                 <Separator/>
-                                <MenuItem Header="Копировать" Tag="" Style="{StaticResource FlatMenuItem}" Click="CopyItem_Click"/>
-                                <MenuItem Header="Вставить" Tag="" Style="{StaticResource FlatMenuItem}" Click="PasteItem_Click"/>
+                                <MenuItem Header="Копировать" Tag="" Style="{StaticResource FlatMenuItem}" Click="CopyItem_Click"/>
+                                <MenuItem Header="Вставить" Tag="" Style="{StaticResource FlatMenuItem}" Click="PasteItem_Click"/>
+                                <Separator/>
+                                <MenuItem Header="Переименовать" Tag="" Style="{StaticResource FlatMenuItem}" Click="RenameItem_Click"/>
+                                <MenuItem Header="Удалить" Tag="" Style="{StaticResource FlatMenuItem}" Click="DeleteItem_Click"/>
                             </ContextMenu>
                         </ListView.ContextMenu>
 
