@@ -1,53 +1,147 @@
 ﻿<Window x:Class="FileManager.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:FileManager"
-        mc:Ignorable="d"
-        Title="Файловый менеджер" Height="450" Width="800">
-    <DockPanel>
-        <!-- Верхняя панель с кнопками -->
-        <StackPanel Orientation="Horizontal" DockPanel.Dock="Top" Background="#2d2d30" Height="40">
-            <Button Content="Назад" Width="75" Margin="2" Click="BackButton_Click"/>
-            <Button Content="Вперёд" Width="75" Margin="2" Click="ForwardButton_Click"/>
-            <CheckBox x:Name="ShowHiddenCheckBox" Content="Показывать скрытые файлы" Checked="ShowHiddenCheckBox_Checked" Unchecked="ShowHiddenCheckBox_Checked" Margin="100,5,0,5" Foreground="White"/>
+        Title="Файловый менеджер" Height="650" Width="1000"
+        FontFamily="Segoe UI" Background="#F0F0F0">
+    <Window.Resources>
+        <!-- Стиль для кнопок -->
+        <Style TargetType="Button" x:Key="FlatButton">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderBrush" Value="Transparent"/>
+            <Setter Property="Foreground" Value="#333"/>
+            <Setter Property="Padding" Value="8,4"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" 
+                                BorderBrush="{TemplateBinding BorderBrush}" 
+                                BorderThickness="0" 
+                                CornerRadius="4" >
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#0078D7"/>
+                                <Setter Property="Foreground" Value="White"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter Property="Background" Value="#005A9E"/>
+                                <Setter Property="Foreground" Value="White"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Foreground" Value="#999"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Стиль для чекбокса -->
+        <Style TargetType="CheckBox" x:Key="FlatCheckBox">
+            <Setter Property="Foreground" Value="#333"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Cursor" Value="Hand"/>
+        </Style>
+
+        <!-- Стиль для контекстного меню -->
+        <Style TargetType="ContextMenu" x:Key="FlatContextMenu">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderBrush" Value="#CCC"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="SnapsToDevicePixels" Value="True"/>
+            <Setter Property="OverridesDefaultStyle" Value="True"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ContextMenu">
+                        <Border Background="{TemplateBinding Background}" 
+                                BorderBrush="{TemplateBinding BorderBrush}" 
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="6" Padding="4">
+                            <StackPanel IsItemsHost="True" />
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Стиль для пунктов меню -->
+        <Style TargetType="MenuItem" x:Key="FlatMenuItem">
+            <Setter Property="Foreground" Value="#333"/>
+            <Setter Property="Padding" Value="8,4"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="MenuItem">
+                        <Border x:Name="Border" Background="Transparent" CornerRadius="4" Padding="4" >
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="24"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <!-- Иконка из шрифта Segoe MDL2 Assets -->
+                                <TextBlock x:Name="Icon" FontFamily="Segoe MDL2 Assets" FontSize="14" Foreground="#666" VerticalAlignment="Center" Text="{Binding Tag, RelativeSource={RelativeSource TemplatedParent}}" Margin="4,0,8,0"/>
+                                <ContentPresenter Grid.Column="1" VerticalAlignment="Center" RecognizesAccessKey="True"/>
+                            </Grid>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsHighlighted" Value="True">
+                                <Setter TargetName="Border" Property="Background" Value="#0078D7"/>
+                                <Setter TargetName="Icon" Property="Foreground" Value="White"/>
+                                <Setter Property="Foreground" Value="White"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Foreground" Value="#AAA"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
+    <DockPanel Margin="8">
+        <!-- Панель инструментов -->
+        <StackPanel Orientation="Horizontal" DockPanel.Dock="Top" VerticalAlignment="Center" Margin="0,0,0,8" >
+            <Button Style="{StaticResource FlatButton}" Width="75" Margin="0,0,8,0" Click="BackButton_Click">← Назад</Button>
+            <Button Style="{StaticResource FlatButton}" Width="75" Margin="0,0,16,0" Click="ForwardButton_Click">Вперёд →</Button>
+
+            <CheckBox x:Name="ShowHiddenCheckBox" Style="{StaticResource FlatCheckBox}" VerticalAlignment="Center"
+                      Content="Показывать скрытые файлы" Checked="ShowHiddenCheckBox_Checked" Unchecked="ShowHiddenCheckBox_Checked"/>
         </StackPanel>
 
-        <!-- Табконтрол с вкладками -->
-        <TabControl x:Name="TabControl">
-            <TabItem Header="Локальный диск C:">
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="250"/>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
+        <!-- Вкладки -->
+        <TabControl x:Name="TabControl" DockPanel.Dock="Top" Margin="0,0,0,8">
+            <TabItem Header="Главная">
+                <DockPanel>
+                    <!-- Дерево папок слева -->
+                    <TreeView x:Name="DirectoryTree" Width="250" DockPanel.Dock="Left" SelectedItemChanged="DirectoryTree_SelectedItemChanged" Margin="0,0,8,0"/>
 
-                    <!-- Дерево директорий -->
-                    <TreeView Name="DirectoryTree" SelectedItemChanged="DirectoryTree_SelectedItemChanged" />
-
-                    <!-- Правая панель со списком файлов и папок -->
-                    <ListView Name="FileList" Grid.Column="1" SelectionMode="Single" MouseDoubleClick="FileList_MouseDoubleClick">
+                    <!-- Список файлов справа -->
+                    <ListView x:Name="FileList" Margin="0" MouseDoubleClick="FileList_MouseDoubleClick" >
                         <ListView.ContextMenu>
-                            <ContextMenu>
-                                <MenuItem Header="Открыть" Click="OpenItem_Click"/>
-                                <MenuItem Header="Удалить" Click="DeleteItem_Click"/>
-                                <MenuItem Header="Переименовать" Click="RenameItem_Click"/>
+                            <ContextMenu Style="{StaticResource FlatContextMenu}">
+                                <MenuItem Header="Открыть" Tag="" Style="{StaticResource FlatMenuItem}" Click="OpenItem_Click"/>
+                                <MenuItem Header="Удалить" Tag="" Style="{StaticResource FlatMenuItem}" Click="DeleteItem_Click"/>
+                                <MenuItem Header="Переименовать" Tag="" Style="{StaticResource FlatMenuItem}" Click="RenameItem_Click"/>
                                 <Separator/>
-                                <MenuItem Header="Копировать" Click="CopyItem_Click"/>
-                                <MenuItem Header="Вставить" Click="PasteItem_Click"/>
+                                <MenuItem Header="Копировать" Tag="" Style="{StaticResource FlatMenuItem}" Click="CopyItem_Click"/>
+                                <MenuItem Header="Вставить" Tag="" Style="{StaticResource FlatMenuItem}" Click="PasteItem_Click"/>
                             </ContextMenu>
                         </ListView.ContextMenu>
+
                         <ListView.View>
                             <GridView>
                                 <GridViewColumn Header="Имя" DisplayMemberBinding="{Binding Name}" Width="300"/>
-                                <GridViewColumn Header="Тип" DisplayMemberBinding="{Binding Type}" Width="100"/>
-                                <GridViewColumn Header="Размер (КБ)" DisplayMemberBinding="{Binding Size}" Width="100"/>
-                                <GridViewColumn Header="Дата изменения" DisplayMemberBinding="{Binding DateModified}" Width="200"/>
+                                <GridViewColumn Header="Тип" DisplayMemberBinding="{Binding Type}" Width="120"/>
+                                <GridViewColumn Header="Размер (КБ)" DisplayMemberBinding="{Binding Size}" Width="120"/>
+                                <GridViewColumn Header="Дата изменения" DisplayMemberBinding="{Binding DateModified}" Width="180"/>
                             </GridView>
                         </ListView.View>
                     </ListView>
-                </Grid>
+                </DockPanel>
             </TabItem>
         </TabControl>
     </DockPanel>
